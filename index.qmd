@@ -1,0 +1,3 @@
+# Preface {.unnumbered}
+
+This course is based on the course of Artem Mazurok, from St Petersburg University. Due to sanctions, it was taken off coursera.org and made unaccessible. Here is an attempt to make it available again.
