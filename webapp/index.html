@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UAV Aerial Photography — Course</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080a0e;
+      --bg-card: #0f1218;
+      --bg-elevated: #161b24;
+      --text: #e8ebf0;
+      --text-muted: #7d8594;
+      --accent: #00e5b0;
+      --accent-dim: #00b88a;
+      --accent-glow: rgba(0, 229, 176, 0.2);
+      --accent-subtle: rgba(0, 229, 176, 0.08);
+      --border: #252d3a;
+      --radius: 14px;
+      --radius-lg: 22px;
+      --font-sans: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: 9999;
+    }
+
+    /* Scroll progress */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dim));
+      z-index: 101;
+      transform-origin: left;
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0.85rem 2rem;
+      background: rgba(8, 10, 14, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      transition: box-shadow 0.2s;
+    }
+    nav.scrolled { box-shadow: var(--shadow); }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 10px;
+      transition: color 0.2s, background 0.2s;
+    }
+    nav a:hover { color: var(--accent); background: var(--accent-subtle); }
+    nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    nav a.active { color: var(--accent); background: var(--accent-subtle); }
+    .nav-links { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+    .logo { font-weight: 600; color: var(--text) !important; }
+    .logo:hover { color: var(--accent) !important; }
+
+    /* Hero */
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140%;
+      height: 80%;
+      background: radial-gradient(ellipse 70% 50% at 50% 30%, var(--accent-glow), transparent 55%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,176,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,176,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6.5vw, 3.75rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.75rem;
+      position: relative;
+      line-height: 1.15;
+      background: linear-gradient(180deg, var(--text) 0%, rgba(232,235,240,0.92) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      margin: 0 auto 1.5rem;
+      font-weight: 400;
+    }
+    .hero .preface {
+      max-width: 580px;
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      margin: 0 auto 2rem;
+      line-height: 1.75;
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      letter-spacing: 0.05em;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 26px;
+      height: 26px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Back to top */
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s, visibility 0.25s, color 0.2s, border-color 0.2s;
+      text-decoration: none;
+      font-size: 1.25rem;
+    }
+    .back-to-top.visible { opacity: 1; visibility: visible; }
+    .back-to-top:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+    /* Sections */
+    section {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 4.5rem 2rem;
+    }
+    section > .week-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    section h2 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      margin: 0 0 0.75rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    section p {
+      color: var(--text-muted);
+      margin: 0 0 1.1rem;
+    }
+    section p.lead {
+      color: var(--text);
+      font-size: 1.15rem;
+      line-height: 1.65;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-dim));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .card:hover {
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 1px var(--accent-glow), var(--shadow-lg);
+    }
+    .card:hover::before { opacity: 1; }
+    .card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0 0 0.85rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card h3::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .card p { margin: 0 0 0.6rem; }
+    .card p:last-child { margin-bottom: 0; }
+
+    /* Visual blocks */
+    .visual-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin: 1.75rem 0;
+      align-items: start;
+    }
+    @media (max-width: 640px) { .visual-row { grid-template-columns: 1fr; } }
+    .visual-row img {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      transition: transform 0.35s ease, box-shadow 0.35s;
+    }
+    .visual-row img:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-lg);
+    }
+    .img-caption {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .diagram {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .diagram-title { color: var(--accent); margin-bottom: 0.75rem; font-weight: 500; }
+
+    /* UAV type diagram */
+    .uav-tree {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .uav-tree li {
+      padding: 0.55rem 0;
+      padding-left: 1.25rem;
+      border-left: 2px solid var(--border);
+      margin-left: 0.5rem;
+      position: relative;
+    }
+    .uav-tree li::before {
+      content: '';
+      position: absolute;
+      left: -2px;
+      top: 1.1rem;
+      width: 8px;
+      height: 2px;
+      background: var(--accent);
+    }
+    .uav-tree .label { color: var(--accent); font-weight: 500; }
+
+    /* Lists */
+    ul.spec-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.6rem 0;
+    }
+    ul.spec-list li {
+      padding: 0.4rem 0;
+      padding-left: 1.35rem;
+      position: relative;
+      color: var(--text-muted);
+    }
+    ul.spec-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75rem;
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* Two-column comparison */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 640px) { .comparison { grid-template-columns: 1fr; } }
+    .comparison .col {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.35rem;
+      transition: border-color 0.2s;
+    }
+    .comparison .col:hover { border-color: var(--accent-dim); }
+    .comparison .col h4 { margin: 0 0 0.6rem; font-size: 1.05rem; color: var(--accent); }
+    .comparison .col p { margin: 0; font-size: 0.92rem; line-height: 1.6; }
+
+    /* Summary section */
+    #summary .spec-list li {
+      border-left: 2px solid var(--accent);
+      margin-left: 0;
+      margin-bottom: 0.75rem;
+      padding: 0.85rem 1rem 0.85rem 1.25rem;
+      background: var(--accent-subtle);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    #summary .spec-list li::before { display: none; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3.5rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Reveal on scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal .card { transition-delay: 0s; }
+    .reveal.visible .card:nth-child(1) { transition-delay: 0.05s; }
+    .reveal.visible .card:nth-child(2) { transition-delay: 0.1s; }
+    .reveal.visible .card:nth-child(3) { transition-delay: 0.15s; }
+    .reveal.visible .card:nth-child(4) { transition-delay: 0.2s; }
+    .reveal.visible .card:nth-child(5) { transition-delay: 0.25s; }
+    .reveal.visible .card:nth-child(6) { transition-delay: 0.3s; }
+    .reveal.visible .visual-row { transition-delay: 0.15s; }
+
+    .skip-link {
+      position: absolute;
+      top: -4rem;
+      left: 1rem;
+      padding: 0.6rem 1rem;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: var(--radius);
+      z-index: 200;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 1rem; outline: 2px solid var(--text); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <nav id="nav">
+    <a href="#" class="logo">UAV Course</a>
+    <div class="nav-links">
+      <a href="#intro">Intro</a>
+      <a href="#week1">Week 1</a>
+      <a href="#week2">Week 2</a>
+      <a href="#week3">Week 3</a>
+      <a href="#week4">Week 4</a>
+      <a href="#summary">Summary</a>
+    </div>
+  </nav>
+
+  <main id="main">
+  <header class="hero">
+    <h1>Aerial Photography with UAVs</h1>
+    <p class="subtitle">From history and UAV types to geodesy, GNSS, and mission planning</p>
+    <p class="preface">This course is based on the course of Artem Mazurok (St Petersburg University). It was made available again after being removed from coursera.org. Here you will find structured material on aerial photography using unmanned aerial vehicles—with clear explanations and visuals.</p>
+    <div class="scroll-hint">Scroll to explore</div>
+  </header>
+
+  <section id="intro" class="reveal">
+    <span class="week-badge">INTRODUCTION</span>
+    <h2>What is Aerial Photography?</h2>
+    <p class="lead">Aerial photography is photographing the Earth’s surface from an aircraft—here, an unmanned one—to obtain objective spatial characteristics and interpret them.</p>
+    <p>Requirements include a defined overlap between images, accuracy for photo centers, and other technical and procedural conditions that we will cover in the following modules.</p>
+    <div class="visual-row">
+      <div>
+        <img src="../img/1/1695652199154-3422a158-3a4b-47ed-9863-f692f03b7c5d_3.jpg" alt="Early aerial photo Boston 1860" />
+        <p class="img-caption">Boston, as the Eagle and the Wild Goose See It, 1860. Early aerial photography.</p>
+      </div>
+      <div>
+        <p><strong>Brief history</strong></p>
+        <ul class="spec-list">
+          <li>1851: wet colloidal process replaces daguerreotype</li>
+          <li>1858: first air photo from a balloon (Nadar, Paris), not preserved</li>
+          <li>1860: first preserved aerial photo (Boston)</li>
+          <li>1910: International Photogrammetric Society created</li>
+          <li>2000: first digital aerial camera (Leica DMC I)</li>
+          <li>Today: UAVs account for ~half of aerial photography work</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="week1" class="reveal">
+    <span class="week-badge">WEEK 1</span>
+    <h2>UAVs: Types, Construction & Payload</h2>
+    <p class="lead">Unmanned Aerial Vehicles are defined as aircraft flying without a pilot on board, controlled automatically and/or by an operator from the ground.</p>
+
+    <div class="card">
+      <h3>Classification by weight &amp; type</h3>
+      <p>Two broad categories: <strong>lighter than air</strong> (airships, balloons) and <strong>heavier than air</strong>. In Russia: &lt;250 g (no registration), 250 g–30 kg (registration), &gt;30 kg (registration + airworthiness certificate).</p>
+      <div class="diagram">
+        <div class="diagram-title">Heavier-than-air UAVs</div>
+        <ul class="uav-tree">
+          <li><span class="label">Fixed-wing</span> — airplane-like, long endurance, needs take-off/landing space</li>
+          <li><span class="label">Multirotor</span> — quad/hex/octocopter; hover, small landing area; shorter flight time</li>
+          <li><span class="label">Hybrid (VTOL)</span> — vertical take-off + fixed-wing cruise; more complex, higher cost</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Construction</h3>
+      <p>Every UAV has <strong>structural parts</strong> (wings, propellers, body) and <strong>on-board electronics</strong>: autopilot, navigation, payload. The autopilot estimates position and motion, controls propulsion, and communicates with the ground station. Navigation combines an <strong>IMU</strong> (gyroscopes, accelerometers, magnetometers) with a <strong>satellite receiver</strong> (GNSS).</p>
+    </div>
+
+    <div class="card">
+      <h3>Payload types</h3>
+      <p><strong>Flight payload</strong>: equipment for autonomy and safety (e.g. pitot tube, ultrasonic/infrared rangefinders). <strong>Mounted payload</strong>: sensors for the mission—cameras, lidars, etc.</p>
+      <p>By sensing method:</p>
+      <ul class="spec-list">
+        <li><strong>Passive</strong> — RGB, NIR, thermal, hyperspectral cameras; magnetometers</li>
+        <li><strong>Active</strong> — LiDAR (light detection and ranging), radar</li>
+      </ul>
+      <p>RGB cameras are the most common (orthomosaics, 3D models). NIR supports vegetation indices. LiDAR can “see” under foliage via multiple returns per pulse; it is more expensive and heavier than photogrammetry.</p>
+    </div>
+
+    <div class="visual-row">
+      <img src="../img/1/1695652199154-3422a158-3a4b-47ed-9863-f692f03b7c5d_30.jpg" alt="DJI Phantom quadcopter" />
+      <img src="../img/1/1695652199154-3422a158-3a4b-47ed-9863-f692f03b7c5d_31.jpg" alt="Geoscan-201 fixed-wing" />
+    </div>
+    <p class="img-caption">Left: DJI Phantom 4 (quadcopter). Right: Geoscan-201 (fixed-wing). Choice depends on area size, terrain, and required endurance.</p>
+  </section>
+
+  <section id="week2" class="reveal">
+    <span class="week-badge">WEEK 2</span>
+    <h2>Coordinate Systems &amp; Geodetic Control</h2>
+    <p class="lead">Survey results must be tied to a coordinate system and vertical datum so that orthomosaics, DEMs, and plans match existing maps and documentation.</p>
+
+    <div class="card">
+      <h3>Coordinate systems</h3>
+      <p><strong>Global</strong>: geocentric (e.g. WGS-84, PZ-90), origin at Earth’s mass center; Z to pole, X to equator/prime meridian. <strong>Reference</strong>: national systems on a reference ellipsoid (e.g. GSK-2011 in Russia, replacing SK-42/SK-95). <strong>Local</strong>: for a region (e.g. a subject of the federation), with defined transformation keys to the state system.</p>
+      <div class="diagram" style="margin:1rem 0;">
+        <div class="diagram-title">Geocentric frame (e.g. WGS-84)</div>
+        <svg viewBox="0 0 200 120" width="100%" height="auto" style="max-width:280px;display:block;margin:0 auto;">
+          <ellipse cx="100" cy="70" rx="85" ry="35" fill="none" stroke="#2a3140" stroke-width="1.5"/>
+          <line x1="100" y1="70" x2="100" y2="15" stroke="#00d4aa" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="100" y1="70" x2="175" y2="70" stroke="#00d4aa" stroke-width="1.5"/>
+          <line x1="100" y1="70" x2="25" y2="70" stroke="#8b92a3" stroke-width="1"/>
+          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="4" orient="auto"><polygon points="0 0, 8 4, 0 8" fill="#00d4aa"/></marker></defs>
+          <text x="102" y="12" fill="#00d4aa" font-size="10" font-family="JetBrains Mono, monospace">Z (pole)</text>
+          <text x="178" y="73" fill="#00d4aa" font-size="10" font-family="JetBrains Mono, monospace">X</text>
+          <text x="98" y="68" fill="#8b92a3" font-size="9">O</text>
+          <text x="22" y="55" fill="#8b92a3" font-size="10" font-family="JetBrains Mono, monospace">Y</text>
+        </svg>
+      </div>
+      <p>Planar coordinates often use <strong>Gauss–Krüger</strong> (Russia) or <strong>UTM</strong> (Universal Transverse Mercator). Heights: <strong>normal heights</strong> from quasigeoid (e.g. Baltic 1977 in Russia) or <strong>geodetic heights</strong> from ellipsoid.</p>
+    </div>
+
+    <div class="card">
+      <h3>GNSS in brief</h3>
+      <p>Global Navigation Satellite Systems (GPS, GLONASS, Galileo, BeiDou) provide position by measuring distances to satellites. The control segment maintains orbits and clocks; the user segment includes consumer devices and <strong>geodetic receivers</strong> (single- or dual-frequency, used for surveying and UAV positioning).</p>
+      <p><strong>Absolute</strong> positioning (one receiver): ~several metres. <strong>Differential/relative</strong> (base + rover): centimetre-level. Methods include <strong>code</strong> and <strong>carrier-phase</strong> measurements; phase requires fixing integer ambiguities.</p>
+      <div class="diagram" style="margin-top:1rem;">
+        <div class="diagram-title">Key terms</div>
+        <p style="margin:0;font-size:0.9rem;line-height:1.6;"><strong>RTK</strong> — real-time kinematic; base sends corrections to rover live. <strong>PPK</strong> — post-processing kinematic; corrections applied after flight. <strong>PPP</strong> — precise point positioning; single receiver + precise orbits/clocks, no base.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Geodetic control for aerial survey</h3>
+      <p>Two main approaches:</p>
+      <div class="comparison">
+        <div class="col">
+          <h4>Ground control points (GCPs)</h4>
+          <p>Mark 3+ identifiable points, measure their coordinates (e.g. by GNSS), use them in photogrammetric adjustment. Pros: lower cost, simple. Cons: slower, not ideal for large or inaccessible areas.</p>
+        </div>
+        <div class="col">
+          <h4>Onboard geodetic GNSS + base / PPP</h4>
+          <p>UAV carries a survey-grade receiver; use a base station (e.g. &lt;30 km) for differential (PPK/RTK) or PPP corrections. Pros: high accuracy, less field time, suitable for large areas. Cons: higher equipment cost; base or correction service needed (unless using PPP).</p>
+        </div>
+      </div>
+      <p>For plan conformity and accuracy control, coordinates/heights from the orthomosaic or DEM are compared with independent geodetic measurements at check points; standard errors are evaluated against the required scale.</p>
+    </div>
+  </section>
+
+  <section id="week3" class="reveal">
+    <span class="week-badge">WEEK 3</span>
+    <h2>Requirements, Reconnaissance &amp; Ground Control Station</h2>
+    <p class="lead">The technical task defines scale, overlap, resolution, accuracy, equipment, and deadlines. Preparatory work includes permissions, geodetic support, and flight mission design.</p>
+
+    <div class="card">
+      <h3>Aerial photography requirements</h3>
+      <p>Key parameters: <strong>scale</strong>, <strong>overlap</strong> (along and across track), <strong>ground sampling distance (GSD)</strong>, <strong>horizontal and vertical accuracy</strong>. For a 1:2000 topographic plan, orthomosaic resolution is typically at least ~10 cm/pixel (often 8–9 cm for margin). Flight altitude is set from GSD and camera parameters. Terrain (e.g. SRTM, ASTER DEM) is used in mission planning to keep constant GSD and avoid obstacles.</p>
+    </div>
+
+    <div class="card">
+      <h3>Preparatory steps (example: small city 30 km²)</h3>
+      <ul class="spec-list">
+        <li>Obtain permissions (airspace, FSB, administration, etc.) and check restricted zones (e.g. fpln.ru, KML in Google Earth).</li>
+        <li>Request SGN (state geodetic network) point coordinates/heights from Rosreestr; check for permanent base stations.</li>
+        <li>Choose suitable days (no low clouds, no precipitation, sun height ≥20°, no snow if needed).</li>
+        <li>Build flight mission: area, GSD, overlap, take-off/landing; use DEM for terrain-following if needed.</li>
+        <li>Place or select GCPs (e.g. road markings in cities); if using onboard GNSS, GCPs can serve as check points only.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Ground control station (GCS)</h3>
+      <p>The GCS is the hardware–software complex for controlling the UAV, receiving telemetry, and viewing video. It can be <strong>ultralight</strong> (smartphone/tablet + remote, e.g. DJI), <strong>light</strong> (laptop + radio, industrial software like Geoscan Planner, UgCS), or <strong>stationary</strong> (military-style cabins).</p>
+      <p>Main functions: <strong>create flight mission</strong> (routes, altitude, overlap, camera trigger), <strong>control during flight</strong> (upload mission, monitor status, change task or land if needed), and <strong>assess survey quality</strong> (photo coverage, GNSS availability) before leaving the field.</p>
+      <div class="diagram" style="margin-top:1.25rem;">
+        <div class="diagram-title">Typical workflow</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:center;">
+          <span style="padding:0.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;">Plan & permissions</span>
+          <span style="color:var(--text-muted);">→</span>
+          <span style="padding:0.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;">Flight mission</span>
+          <span style="color:var(--text-muted);">→</span>
+          <span style="padding:0.5rem 1rem;background:var(--bg-card);border:1px solid var(--accent);border-radius:8px;color:var(--accent);">Fly & capture</span>
+          <span style="color:var(--text-muted);">→</span>
+          <span style="padding:0.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;">Process & deliver</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="week4" class="reveal">
+    <span class="week-badge">WEEK 4</span>
+    <h2>GNSS Data Processing</h2>
+    <p class="lead">Surveying and UAV missions often rely on post-processing of GNSS data: static (networks, GCPs) and kinematic (trajectory, photo positions).</p>
+
+    <div class="card">
+      <h3>Static processing</h3>
+      <p>Used for geodetic networks and GCP coordinate determination. Data are stored in exchange formats (e.g. <strong>RINEX</strong>). Processing steps: import, set antenna height and model, cutoff angle and SNR mask, then <strong>baseline</strong> computation (double-difference phase, ambiguity resolution). Multiple baselines are combined in a <strong>network adjustment</strong>. Software: Trimble Business Center, Leica Geo Office, Topcon Magnet Tools, RTKLib (free).</p>
+    </div>
+
+    <div class="card">
+      <h3>Kinematic processing</h3>
+      <p>Used for moving receivers: trajectory and <strong>event</strong> positions (e.g. camera trigger times). Requires higher recording rate (e.g. 5–10 Hz). Rover is initialised (static or on-the-fly); base and rover data must overlap in time without gaps. Processing computes the baseline at each epoch and often applies a <strong>Kalman filter</strong> for smooth trajectory. Forward and backward runs can be combined. Output: trajectory and event coordinates (e.g. for photogrammetry). Software: Topcon Magnet Office, Javad Justin, Novatel GrafNav.</p>
+    </div>
+
+    <div class="card">
+      <h3>RTK and PPP</h3>
+      <p><strong>Real-time kinematic (RTK)</strong>: base sends corrections to the rover in real time (radio or cellular); centimetre accuracy within ~30 km of the base. <strong>Post-processing kinematic (PPK)</strong>: same idea, corrections applied after the flight. <strong>Precise Point Positioning (PPP)</strong>: single receiver with precise orbits and clock corrections (e.g. from IGS); no base station, but convergence takes time and final products may be delayed (e.g. 2 weeks for final ephemeris).</p>
+    </div>
+  </section>
+
+  <section id="summary" class="reveal">
+    <span class="week-badge">SUMMARY</span>
+    <h2>Key takeaways</h2>
+    <ul class="spec-list">
+      <li><strong>Aerial photography</strong> from UAVs requires defined overlap, GSD, and geodetic control to produce orthomosaics and DEMs that match specifications.</li>
+      <li><strong>UAV choice</strong>: fixed-wing for large areas and endurance; multirotor for hover and 3D modelling; hybrid for VTOL + range.</li>
+      <li><strong>Payload</strong>: RGB/NIR/thermal and LiDAR are complementary; photogrammetry is cheaper, LiDAR excels under vegetation.</li>
+      <li><strong>Coordinates &amp; heights</strong>: bind results to the required system (state or local) and vertical datum (e.g. Baltic 77) and check accuracy with independent points.</li>
+      <li><strong>Geodetic control</strong>: GCPs for small or low-budget projects; onboard geodetic GNSS + base or PPP for large or high-accuracy work.</li>
+      <li><strong>Mission planning</strong>: permissions, SGN points, DEM-based routes, GSD and overlap; GCS for mission creation, flight control, and quality check.</li>
+      <li><strong>GNSS processing</strong>: static for networks and GCPs; kinematic/PPK for UAV trajectory and photo positions; RTK for real-time; PPP when no base is available.</li>
+    </ul>
+  </section>
+
+  </main>
+  <footer>
+    <p>Course material based on Artem Mazurok, St Petersburg University. Restored and adapted for the web.</p>
+  </footer>
+
+  <a href="#" class="back-to-top" id="back-to-top" aria-label="Back to top">↑</a>
+
+  <script>
+    (function () {
+      var scrollProgress = document.getElementById('scroll-progress');
+      var nav = document.getElementById('nav');
+      var backToTop = document.getElementById('back-to-top');
+      var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+      var sections = document.querySelectorAll('section[id]');
+
+      function updateScrollProgress() {
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (docHeight <= 0) return;
+        var p = window.scrollY / docHeight;
+        scrollProgress.style.transform = 'scaleX(' + p + ')';
+      }
+      function updateNav() {
+        if (window.scrollY > 60) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+        var top = window.scrollY + 120;
+        var current = '';
+        sections.forEach(function (sec) {
+          if (sec.offsetTop <= top) current = sec.getAttribute('id');
+        });
+        navLinks.forEach(function (a) {
+          var href = a.getAttribute('href');
+          if (href.length > 1 && href === '#' + current) a.classList.add('active');
+          else a.classList.remove('active');
+        });
+      }
+      function updateBackToTop() {
+        if (window.scrollY > 800) backToTop.classList.add('visible');
+        else backToTop.classList.remove('visible');
+      }
+      function onScroll() {
+        updateScrollProgress();
+        updateNav();
+        updateBackToTop();
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      onScroll();
+
+      var reveals = document.querySelectorAll('.reveal');
+      function reveal() {
+        reveals.forEach(function (el) {
+          var top = el.getBoundingClientRect().top;
+          var win = window.innerHeight;
+          if (top < win * 0.82) el.classList.add('visible');
+        });
+      }
+      window.addEventListener('scroll', reveal, { passive: true });
+      window.addEventListener('resize', reveal);
+      reveal();
+    })();
+  </script>
+</body>
+</html>
