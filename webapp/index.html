@@ -386,6 +386,89 @@
     .comparison .col h4 { margin: 0 0 0.6rem; font-size: 1.05rem; color: var(--accent); }
     .comparison .col p { margin: 0; font-size: 0.92rem; line-height: 1.6; }
 
+    /* Ukraine section */
+    #ukraine {
+      border-top: 1px solid var(--border);
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.85rem 0;
+    }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      border: 1px solid rgba(0,229,176,0.2);
+      letter-spacing: 0.04em;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .stat-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .stat-box:hover { border-color: var(--accent-dim); }
+    .stat-box .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      display: block;
+      line-height: 1.2;
+    }
+    .stat-box .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      display: block;
+    }
+    .timeline {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent), transparent);
+    }
+    .timeline li {
+      padding: 0.55rem 0 0.55rem 2rem;
+      position: relative;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+    .timeline li::before {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 0.95rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+    }
+    .timeline li strong { color: var(--text); }
+
     /* Summary section */
     #summary .spec-list li {
       border-left: 2px solid var(--accent);
@@ -457,6 +540,7 @@
       <a href="#week2">Week 2</a>
       <a href="#week3">Week 3</a>
       <a href="#week4">Week 4</a>
+      <a href="#ukraine">Ukraine</a>
       <a href="#summary">Summary</a>
     </div>
   </nav>
@@ -647,6 +731,165 @@
     </div>
   </section>
 
+  <section id="ukraine" class="reveal">
+    <span class="week-badge">SPECIAL TOPIC</span>
+    <h2>Drone Innovation &amp; the War in Ukraine</h2>
+    <p class="lead">The conflict in Ukraine has become the most intense drone war in history, compressing years of UAV development into months and reshaping how the world thinks about unmanned systems.</p>
+    <p>Both sides operate hundreds of thousands of drones per year. The war has driven rapid innovation across FPV kamikaze drones, loitering munitions, electronic warfare, AI-guided navigation, and naval surface drones—with direct implications for civilian UAV technology.</p>
+
+    <div class="stat-grid reveal">
+      <div class="stat-box"><span class="stat-num">&gt;1 M</span><span class="stat-label">Drones used by Ukraine in 2024 (est.)</span></div>
+      <div class="stat-box"><span class="stat-num">~$500</span><span class="stat-label">Typical FPV drone build cost</span></div>
+      <div class="stat-box"><span class="stat-num">~200 km/h</span><span class="stat-label">FPV attack drone top speed</span></div>
+      <div class="stat-box"><span class="stat-num">&gt;1 000 km</span><span class="stat-label">Range of long-strike drones</span></div>
+    </div>
+
+    <div class="card">
+      <h3>From hobbyist to weapon: FPV drones</h3>
+      <div class="tag-row">
+        <span class="tag">FPV</span><span class="tag">Kamikaze</span><span class="tag">COTS adaptation</span>
+      </div>
+      <p>Racing FPV (first-person view) drones were adapted into one-way attack systems. Pilots wear FPV goggles and fly the drone into a target at high speed. Key characteristics:</p>
+      <ul class="spec-list">
+        <li><strong>Cost</strong>: ~$400–800 to build; cheap enough to saturate defences at scale.</li>
+        <li><strong>Speed &amp; agility</strong>: up to 200 km/h, hard to intercept with conventional systems.</li>
+        <li><strong>Payload</strong>: typically a 40 mm or 60 mm grenade, RPG warhead, or custom munition.</li>
+        <li><strong>Training</strong>: pilots trained in weeks using simulators; Ukraine has trained tens of thousands.</li>
+        <li><strong>Limitation</strong>: range limited by analogue video link (~5–10 km); vulnerable to jamming and skilled EW.</li>
+      </ul>
+      <p>Ukraine industrialised domestic FPV production, reducing foreign dependency and cutting lead times from months to days. Russia followed suit, dramatically scaling up its own FPV output through 2023–2024.</p>
+    </div>
+
+    <div class="card">
+      <h3>Loitering munitions</h3>
+      <div class="tag-row">
+        <span class="tag">Loitering munition</span><span class="tag">Lancet</span><span class="tag">Shahed-136</span><span class="tag">Switchblade</span>
+      </div>
+      <p>Unlike FPV drones, loitering munitions can orbit an area and choose when to strike, often with optical or radar seekers.</p>
+      <div class="comparison">
+        <div class="col">
+          <h4>Russia — Lancet / KUB</h4>
+          <p>The Lancet-3 loitering munition has been highly effective against Ukrainian artillery and armoured vehicles. Uses optical/TV guidance; range ~40 km; warhead 3–5 kg. Produced in large numbers domestically.</p>
+        </div>
+        <div class="col">
+          <h4>Russia — Shahed-136 (Geran-2)</h4>
+          <p>Iranian-designed delta-wing drone, ~2 m span, 50 kg warhead, range &gt;1 000 km; used in mass salvos to overwhelm air defence. Ukraine produces Palianytsia and similar designs in response.</p>
+        </div>
+      </div>
+      <div class="comparison">
+        <div class="col">
+          <h4>Ukraine — Switchblade (US-supplied)</h4>
+          <p>Switchblade 300: anti-personnel, ~10 min loiter, 10 km range. Switchblade 600: anti-armour, ~40 min, ~40 km range. Tube-launched, backpack-portable.</p>
+        </div>
+        <div class="col">
+          <h4>Ukraine — domestic strike UAVs</h4>
+          <p>Ukraine developed several long-range jet-propelled drones (e.g. UJ-22, Beaver/Bobr) capable of striking targets inside Russia. Some have reached Moscow. Declared range 800–1 000+ km.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Commercial drones on the battlefield</h3>
+      <div class="tag-row">
+        <span class="tag">DJI Mavic</span><span class="tag">Reconnaissance</span><span class="tag">Artillery correction</span>
+      </div>
+      <p>Off-the-shelf commercial drones — primarily DJI Mavic 3, Autel EVO — are the backbone of frontline reconnaissance. Operators use them to observe enemy positions, correct artillery fire in real time, and drop small munitions (grenades, modified mortar rounds) with 3D-printed holders.</p>
+      <p>This mainstreamed the role of the UAV operator as a standard infantry skill. DJI eventually geofenced the conflict zone; both sides turned to non-DJI hardware or modified firmware to bypass restrictions. The conflict accelerated demand for non-Chinese, non-geofenced platforms.</p>
+    </div>
+
+    <div class="card">
+      <h3>Electronic warfare (EW) &amp; GPS-denied navigation</h3>
+      <div class="tag-row">
+        <span class="tag">EW</span><span class="tag">GPS jamming</span><span class="tag">Spoofing</span><span class="tag">Optical navigation</span>
+      </div>
+      <p>Russia deployed dense, layered EW coverage — GPS jammers, spoofing systems (e.g. Krasuha, Tirada-2S), and video-link jammers — making the frontline one of the most GPS-degraded environments ever encountered. This drove rapid innovation:</p>
+      <ul class="spec-list">
+        <li><strong>Inertial navigation &amp; terrain matching</strong>: drones cross-reference onboard IMU with stored terrain maps.</li>
+        <li><strong>Computer vision / optical flow</strong>: cameras provide velocity and position estimates independent of GNSS, enabling stable hover in GPS-denied zones.</li>
+        <li><strong>Visual odometry</strong>: sequences of camera frames used to estimate trajectory without satellite signals.</li>
+        <li><strong>Fibre-optic guided FPV</strong>: Ukraine developed fibre-optic tethered FPV drones immune to RF jamming; the drone unreels a thin fibre as it flies, transmitting video and receiving controls through the cable.</li>
+        <li><strong>Frequency hopping &amp; spread spectrum</strong>: data links adapted to jump frequencies faster than jamming systems can follow.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>AI, autonomy &amp; target recognition</h3>
+      <div class="tag-row">
+        <span class="tag">AI guidance</span><span class="tag">Autonomous terminal</span><span class="tag">Machine vision</span>
+      </div>
+      <p>As jamming made remote-piloted final approaches unreliable, both sides began integrating AI-powered terminal guidance. The drone is piloted to the vicinity of a target, then an onboard neural network locks onto a vehicle or object and steers autonomously to impact — even with the data link severed.</p>
+      <p>Ukraine's Saker Scout and several Lancet variants reportedly use this capability. This marks a significant shift: the human operator makes the targeting decision, but the drone executes autonomously. It raises important legal and ethical questions about meaningful human control that the international community is still debating.</p>
+      <p>AI is also used for <strong>post-flight damage assessment</strong> — automatically analysing reconnaissance footage to detect and classify destroyed or damaged equipment.</p>
+    </div>
+
+    <div class="card">
+      <h3>Uncrewed surface vehicles (USVs) — naval drones</h3>
+      <div class="tag-row">
+        <span class="tag">USV</span><span class="tag">Maritime</span><span class="tag">Sea Baby</span>
+      </div>
+      <p>Ukraine extended the drone war to the Black Sea. Uncrewed surface vehicles — essentially fast boats loaded with explosives — successfully struck Russian warships, a feat previously undemonstrated in warfare at this scale.</p>
+      <ul class="spec-list">
+        <li><strong>Sea Baby / Magura V5</strong>: Ukraine's primary USV; ~200 kg warhead, ~400 km range, GPS + optical guidance; used in attacks on the Kerch Bridge and Russian Black Sea Fleet vessels.</li>
+        <li>Forced the Russian fleet to abandon Sevastopol as a primary base, reshaping Black Sea strategic balance.</li>
+        <li>Demonstrated that inexpensive autonomous platforms can threaten multi-billion-dollar warships, accelerating naval drone programmes worldwide.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Counter-drone systems</h3>
+      <div class="tag-row">
+        <span class="tag">C-UAS</span><span class="tag">Kinetic</span><span class="tag">EW intercept</span><span class="tag">Laser</span>
+      </div>
+      <p>The scale of drone use drove equally rapid development of counter-UAS (C-UAS) technology:</p>
+      <div class="comparison">
+        <div class="col">
+          <h4>Electronic</h4>
+          <p>GPS jammers, video-link jammers, spoofers. Cheap and effective against unprotected consumer drones. Limitations: affects friendly systems; FPV drones on fibres are immune.</p>
+        </div>
+        <div class="col">
+          <h4>Kinetic interceptors</h4>
+          <p>Modified anti-aircraft guns (ZU-23-2), shotgun-armed soldiers, dedicated gun systems (Gepard). Expensive per kill against cheap FPV drones; effective against larger targets.</p>
+        </div>
+      </div>
+      <div class="comparison">
+        <div class="col">
+          <h4>Net guns &amp; drone catchers</h4>
+          <p>Handheld launchers fire entanglement nets; effective at short range for protecting high-value static assets. Low cost.</p>
+        </div>
+        <div class="col">
+          <h4>Directed energy (lasers)</h4>
+          <p>Ukraine and allies have begun fielding laser systems capable of burning drone optics or structure. High cost, limited range, but effectively unlimited magazine and low per-shot cost.</p>
+        </div>
+      </div>
+      <p>No single solution dominates; effective C-UAS requires layered, heterogeneous systems — the same lesson that applies to air defence at scale.</p>
+    </div>
+
+    <div class="card">
+      <h3>Key takeaways for civilian UAV technology</h3>
+      <p>The conflict has had measurable spillover effects on civilian and commercial drone development:</p>
+      <ul class="spec-list">
+        <li><strong>Resilient navigation</strong>: GPS-denied operation techniques (visual odometry, terrain matching) are now mainstream R&amp;D priorities for delivery and inspection drones.</li>
+        <li><strong>Anti-jamming data links</strong>: frequency-hopping and encrypted links are becoming standard rather than optional.</li>
+        <li><strong>Domestic supply chains</strong>: many countries have recognised the strategic risk of over-reliance on Chinese-made drone components and are building local manufacturing capacity.</li>
+        <li><strong>Swarm coordination</strong>: low-cost distributed sensing — one drone spots, another strikes — informs civilian applications in search-and-rescue and precision agriculture.</li>
+        <li><strong>Rapid iteration culture</strong>: Ukraine's model of designing, printing, testing, and deploying new drone variants in days is influencing agile manufacturing practices in civilian aerospace.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Brief timeline</h3>
+      <ul class="timeline">
+        <li><strong>Feb 2022</strong> — Bayraktar TB2 becomes a symbol of Ukrainian resistance; destroys Russian armoured columns in the north.</li>
+        <li><strong>Spring 2022</strong> — DJI Mavics ubiquitous for artillery spotting; grenade-drop modifications appear within weeks.</li>
+        <li><strong>Autumn 2022</strong> — Russia begins mass Shahed-136 salvos against Ukrainian infrastructure; Ukraine adapts with layered air defence.</li>
+        <li><strong>2023</strong> — FPV drone production industrialises on both sides; Ukrainian USVs score hits on Black Sea Fleet; Lancet loitering munition proliferates on Russian side.</li>
+        <li><strong>2023–2024</strong> — Fibre-optic FPV drones deployed; AI-guided terminal homing enters use; drone pilot training becomes mass-scale.</li>
+        <li><strong>2024</strong> — Ukraine claims &gt;1 million drone strikes in the year; long-range Ukrainian drones reach targets 1 000+ km inside Russia.</li>
+        <li><strong>Ongoing</strong> — Both sides race to develop anti-drone laser systems, autonomous swarms, and next-generation EW countermeasures.</li>
+      </ul>
+    </div>
+  </section>
+
   <section id="summary" class="reveal">
     <span class="week-badge">SUMMARY</span>
     <h2>Key takeaways</h2>
@@ -658,6 +901,7 @@
       <li><strong>Geodetic control</strong>: GCPs for small or low-budget projects; onboard geodetic GNSS + base or PPP for large or high-accuracy work.</li>
       <li><strong>Mission planning</strong>: permissions, SGN points, DEM-based routes, GSD and overlap; GCS for mission creation, flight control, and quality check.</li>
       <li><strong>GNSS processing</strong>: static for networks and GCPs; kinematic/PPK for UAV trajectory and photo positions; RTK for real-time; PPP when no base is available.</li>
+      <li><strong>War in Ukraine</strong>: the conflict has been the fastest-ever forcing function for drone innovation—FPV kamikazes, loitering munitions, GPS-denied AI guidance, naval USVs, and layered C-UAS have reshaped the field and are already feeding back into civilian UAV R&amp;D.</li>
     </ul>
   </section>
 
